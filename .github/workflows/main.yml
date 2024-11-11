@@ -1,4 +1,4 @@
-name: Gitleaks Scan and clone
+name: Gitleaks Scan and Clone
 
 on:
   schedule:
@@ -29,10 +29,10 @@ jobs:
       - name: Run Gitleaks on the downloaded repository
         uses: gitleaks/gitleaks-action@v2
         with:
-          args: "--source /home/runner/work/test-files/test-files-main --report-format json --report-path gitleaks_report.json --since=10"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Required for pushing back to the repository
-          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }} # Only required for organizations (not personal repos)
+          source: ./test-files-main  # Specify the path to the directory you want to scan
+          report-format: json
+          report-path: gitleaks_report.json
+          since: 10  # Optional: set a commit history window for scanning
 
       - name: Upload Gitleaks Report as Artifact
         uses: actions/upload-artifact@v3
