@@ -19,6 +19,8 @@ jobs:
           git clone https://github.com/tmclough/test-files.git
           # Navigate into the cloned directory
           cd test-files
+          # Check if it's a valid git repository
+          git status
 
       # Run Gitleaks on the cloned repository
       - name: Run Gitleaks on the cloned repository
