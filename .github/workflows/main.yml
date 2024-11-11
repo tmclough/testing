@@ -17,22 +17,13 @@ jobs:
         with:
           fetch-depth: 0  # Ensures the entire history is fetched for scanning
 
-      - name: Download the test-files repository as tarball from GitHub
-        run: |
-          # Download the test-files repo as a tarball
-          curl -L https://github.com/tmclough/test-files/archive/refs/heads/main.tar.gz -o repo.tar.gz
-          # Extract the tarball
-          tar -xzvf repo.tar.gz
-          # Change to the extracted directory (name should match the repo)
-          cd test-files-main
-
-      - name: Run Gitleaks on the downloaded repository
+      - name: Run Gitleaks on the current directory
         uses: gitleaks/gitleaks-action@v2
         with:
-          source: ./test-files-main  # Specify the path to the directory you want to scan
-          report-format: json
-          report-path: gitleaks_report.json
-          since: 10  # Optional: set a commit history window for scanning
+          args: "--path . --report-format json --report-path gitleaks_report.json --since=10"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Required for pushing back to the repository
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}  # Only required for organizations (not personal repos)
 
       - name: Upload Gitleaks Report as Artifact
         uses: actions/upload-artifact@v3
