@@ -1,4 +1,4 @@
-name: Gitleaks Scan and clone
+name: Gitleaks Scan and Clone
 
 on:
   schedule:
@@ -12,28 +12,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout the current repository
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0  # Ensures the entire history is fetched for scanning
-
-      - name: Download the test-files repository as tarball from GitHub
+      # Clone the external test repository
+      - name: Clone test repository
         run: |
-          # Download the test-files repo as a tarball
-          curl -L https://github.com/tmclough/test-files/archive/refs/heads/main.tar.gz -o repo.tar.gz
-          # Extract the tarball
-          tar -xzvf repo.tar.gz
-          # Change to the extracted directory (name should match the repo)
-          cd test-files-main
+          # Replace with the URL of the repo you want to scan
+          git clone https://github.com/tmclough/test-files.git
+          # Navigate into the cloned directory
+          cd test-files
 
-      - name: Run Gitleaks on the downloaded repository
+      # Run Gitleaks on the cloned repository
+      - name: Run Gitleaks on the cloned repository
         uses: gitleaks/gitleaks-action@v2
         with:
-          args: "--source /home/runner/work/test-files/test-files-main --report-format json --report-path gitleaks_report.json --since=10"
+          scan-type: "repo"  # Default scan type
+          report-format: "json"  # Output format
+          report-path: "gitleaks_report.json"  # Path to save the report
+          source: "./test-files"  # Path to the cloned repository
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Required for pushing back to the repository
-          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }} # Only required for organizations (not personal repos)
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}  # Only required for organizations (not personal repos)
 
+      # Upload Gitleaks Report as Artifact
       - name: Upload Gitleaks Report as Artifact
         uses: actions/upload-artifact@v3
         with:
